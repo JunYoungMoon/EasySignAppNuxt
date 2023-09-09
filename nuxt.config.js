@@ -65,6 +65,21 @@ export default {
     },
   },
 
+  router: {
+    extendRoutes(routes, resolve) {
+      routes.push({
+        path: '/login',
+        component: resolve(__dirname, 'layouts/auth.vue'), // auth 레이아웃 사용
+        children: [
+          {
+            path: '',
+            component: resolve(__dirname, 'pages/auth/login.vue'), // login 페이지
+          },
+        ],
+      });
+    },
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },

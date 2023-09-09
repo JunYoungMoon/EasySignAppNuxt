@@ -1,50 +1,49 @@
 <template>
-  <v-container>
-    <v-card width="400" class="pa-3 mx-auto">
-      <v-form fast-fail @submit.prevent="login">
-        <v-text-field variant="outlined" v-model="loginData.id" label="ID"></v-text-field>
-        <v-text-field variant="outlined" v-model="loginData.password" label="Password"></v-text-field>
-        <a href="#" class="text-body-2 font-weight-regular">Forgot Password?</a>
+  <v-card width="400" class="pa-3 mx-auto">
+    <v-form fast-fail @submit.prevent="login">
+      <v-text-field v-model="loginData.id" variant="outlined" label="ID"></v-text-field>
+      <v-text-field v-model="loginData.password" variant="outlined" label="Password"></v-text-field>
+      <a href="#" class="text-body-2 font-weight-regular">Forgot Password?</a>
 
-        <v-btn type="submit" color="primary" block class="mt-2">Sign in</v-btn>
+      <v-btn type="submit" color="primary" block class="mt-2">Sign in</v-btn>
 
-      </v-form>
-      <div class="mt-2">
-        <p class="text-body-2">Don't have an account? <a href="#">Sign Up</a></p>
-      </div>
+    </v-form>
+    <div class="mt-2">
+      <p class="text-body-2">Don't have an account? <a href="#">Sign Up</a></p>
+    </div>
 
-      <v-row>
-        <v-col class="pa-0">
-          <v-img
-            contain
-            src="social/google.png"
-            style="cursor: pointer;"
-            @click="googleLogin"
-          ></v-img>
-        </v-col>
-        <v-col class="pa-1">
-          <v-img
-            contain
-            src="social/kakao.png"
-            style="cursor: pointer;"
-            @click="kakaoLogin"
-          ></v-img>
-        </v-col>
-        <v-col class="pa-1">
-          <v-img
-            contain
-            src="social/naver.png"
-            style="cursor: pointer;"
-            @click="naverLogin"
-          ></v-img>
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-container>
+    <v-row>
+      <v-col class="pa-0">
+        <v-img
+          contain
+          src="social/google.png"
+          style="cursor: pointer;"
+          @click="googleLogin"
+        ></v-img>
+      </v-col>
+      <v-col class="pa-1">
+        <v-img
+          contain
+          src="social/kakao.png"
+          style="cursor: pointer;"
+          @click="kakaoLogin"
+        ></v-img>
+      </v-col>
+      <v-col class="pa-1">
+        <v-img
+          contain
+          src="social/naver.png"
+          style="cursor: pointer;"
+          @click="naverLogin"
+        ></v-img>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script>
 export default {
+  name: 'Login',
   data() {
     return {
       loginData: {
