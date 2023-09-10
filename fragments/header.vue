@@ -51,6 +51,20 @@
 <script>
 
 export default {
+  // eslint-disable-next-line require-await
+  async asyncData({ data }) {
+
+    console.log(data);
+
+    // if (tokenType === 'refreshToken') {
+    //     const token = JSON.parse(data);
+    //
+    //     app.$cookies.set("accessToken", token.accessToken);
+    //     app.$cookies.set("refreshToken", token.refreshToken);
+    //
+    //   this.headerText = 'login';
+    // }
+  },
   data() {
     return {
       clipped: false,
@@ -71,6 +85,7 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'SignApp',
+      headerText: 'Login',
     }
   }
   ,
@@ -79,5 +94,6 @@ export default {
       this.$router.push('/login');
     },
   },
+
 }
 </script>

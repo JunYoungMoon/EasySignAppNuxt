@@ -1,12 +1,12 @@
 // middleware/auth.js
 
-export default async function (context) {
+export default async function (app) {
     // 페이지 로딩 시 실행
-    await fetchCsrfToken(context);
-    await checkAuth(context, 'accessToken');
+    await fetchCsrfToken(app);
+    await checkAuth(app, 'accessToken');
 }
 
-function ajaxRequest(context, url, method, data) {
+function ajaxRequest(app, url, method, data) {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -27,43 +27,43 @@ function ajaxRequest(context, url, method, data) {
         data, // POST 요청 시 데이터를 본문에 추가
     };
 
-    context.$axios(axiosConfig)
-        .then((response) => {
-            if (response.status === 200) {
-                return response.data;
-            } else {
-                switch (response.status) {
-                    case 400:
-                        console.error('Bad Request:', response.data);
-                        // 400 Bad Request에 대한 처리 코드 추가
-                        break;
-                    case 401:
-                        console.error('Unauthorized:', response.data);
-                        // 401 Unauthorized에 대한 처리 코드 추가
-                        break;
-                    case 403:
-                        console.error('Forbidden:', response.data);
-                        // 403 Forbidden에 대한 처리 코드 추가
-                        break;
-                    default:
-                        console.error('Request failed with status:', response.status);
-                    // 다른 상태 코드에 대한 처리 코드 추가
+    return new Promise((resolve, reject) => {
+        app.$axios(axiosConfig)
+            .then((response) => {
+                if (response.status === 200) {
+                    resolve(response.data);
+                } else {
+                    switch (response.status) {
+                        case 400:
+                            // 에러 객체를 생성하여 전달
+                            reject(new Error('Bad Request: ' + response.data));
+                            break;
+                        case 401:
+                            reject(new Error('Unauthorized: ' + response.data));
+                            break;
+                        case 403:
+                            reject(new Error('Forbidden: ' + response.data));
+                            break;
+                        default:
+                            reject(new Error('Request failed with status: ' + response.status));
+                    }
                 }
-            }
-        })
-        .catch((error) => {
-            console.error('Request error:', error);
-        });
+            })
+            .catch((error) => {
+                // Axios 오류 처리
+                reject(new Error('Request error: ' + error));
+            });
+    });
 }
 
 
-async function fetchCsrfToken(context) {
+async function fetchCsrfToken(app) {
     try {
         // 미들웨어 시작 시 로딩 표시
         console.log('Loading...');
 
         // CSRF 토큰 요청
-        const response = await context.$axios.$get('/getcsrf');
+        const response = await app.$axios.$get('/getcsrf');
         const tokenInfo = response.token;
 
         console.log('CSRF token stored in Cookies:', tokenInfo);
@@ -80,59 +80,32 @@ async function fetchCsrfToken(context) {
     }
 }
 
-async function checkAuth(context, tokenType) {
+async function checkAuth(app, tokenType) {
     let token;
     if (tokenType === 'accessToken') {
-        token = getCookie('accessToken');
+        token = app.$cookies.get('accessToken');
     } else if (tokenType === 'refreshToken') {
-        token = getCookie('refreshToken');
+        token = app.$cookies.get('refreshToken');
     } else {
         console.error('Invalid tokenType:', tokenType);
         return;
     }
 
-    const csrfToken = getCookie('XSRF-TOKEN');
+    const csrfToken = app.$cookies.get('XSRF-TOKEN');
 
     try {
-        const res = await ajaxRequest(context, '/check-auth', 'POST', {
+        const res = await ajaxRequest(app, '/check-auth', 'POST', {
             token,
             csrfToken,
         });
 
         if (tokenType === 'accessToken' && res === 'Refresh token required') {
-            await checkAuth(context, 'refreshToken');
+            await checkAuth(app, 'refreshToken');
             return false;
         }
 
-        const headerElement = document.getElementById('header');
-
-        if (tokenType === 'refreshToken') {
-            const token = JSON.parse(res);
-
-            setSessionCookie("accessToken", token.accessToken);
-            setSessionCookie("refreshToken", token.refreshToken);
-
-            headerElement.innerHTML = '<div>로그인 상태 입니다.</div>';
-        } else {
-            headerElement.innerHTML = res;
-        }
+        return {res};
     } catch (error) {
         console.error('Error checking authentication:', error);
     }
-}
-
-function setSessionCookie(name, value) {
-    document.cookie = name + "=" + value + ";path=/";
-}
-
-// Function to retrieve a cookie by name
-function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith(name + '=')) {
-            return cookie.substring(name.length + 1);
-        }
-    }
-    return null;
 }
