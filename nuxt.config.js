@@ -93,7 +93,7 @@ export default {
                     component: resolve(__dirname, 'pages/auth/getToken.vue'), // getToken.vue 페이지
                 });
         },
-        middleware: ['auth', 'tokenMiddleware'],
+        middleware: ['auth'],
     },
 
     // Build Configuration: https://go.nuxtjs.dev/config-build
