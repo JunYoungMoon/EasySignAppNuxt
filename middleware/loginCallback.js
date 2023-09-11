@@ -1,8 +1,8 @@
-// middleware/loginCallBack.js
+// middleware/loginCallback.js
 
 export default function ({app, route, redirect}) {
     // 미들웨어가 적용될 페이지 경로를 지정합니다.
-    const pagesWithMiddleware = ['/loginCallBack']; // 미들웨어를 적용할 페이지 목록
+    const pagesWithMiddleware = ['/loginCallback']; // 미들웨어를 적용할 페이지 목록
 
     // 현재 페이지의 경로를 가져옵니다.
     const currentPath = route.path;
