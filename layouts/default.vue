@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <HeaderComponent></HeaderComponent>
     <!--컨텐츠영역-->
     <v-main>
@@ -21,6 +21,5 @@ export default {
     HeaderComponent,
     FooterComponent,
   },
-
 }
 </script>

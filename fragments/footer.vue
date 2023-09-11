@@ -13,6 +13,9 @@ export default {
     return {
       fixed: false,
     }
-  }
+  },
+  beforeCreate() {
+    this.$vuetify.theme.dark = this.$cookies.get('theme') !== 'light';
+  },
 }
 </script>

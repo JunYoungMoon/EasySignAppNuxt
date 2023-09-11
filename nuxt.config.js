@@ -61,7 +61,7 @@ export default {
                     info: colors.teal.lighten1,
                     warning: colors.amber.base,
                     error: colors.deepOrange.accent4,
-                    success: colors.green.accent3,
+                    success: colors.green.accent3
                 },
                 light: {
                     primary: '#1976d2',
@@ -71,29 +71,30 @@ export default {
                     info: '#2196F3',
                     success: '#4CAF50',
                     warning: '#FFC107'
-                }
+                },
             },
         },
     },
 
     router: {
         extendRoutes(routes, resolve) {
-            routes.push({
+            routes.push(
+                {
+                    path: '/',
+                    component: resolve(__dirname, 'pages/index.vue'),
+                },
+                {
                     path: '/login',
-                    component: resolve(__dirname, 'layouts/auth.vue'), // auth 레이아웃 사용
+                    component: resolve(__dirname, 'layouts/auth.vue'),
                     children: [
                         {
                             path: '',
-                            component: resolve(__dirname, 'pages/auth/login.vue'), // login 페이지
+                            component: resolve(__dirname, 'pages/auth/login.vue'),
                         },
                     ],
-                },
-                {
-                    path: '/auth', // "/auth" 경로 추가
-                    component: resolve(__dirname, 'pages/auth/getToken.vue'), // getToken.vue 페이지
                 });
         },
-        middleware: ['auth'],
+        middleware: ['auth','loginCallback'],
     },
 
     // Build Configuration: https://go.nuxtjs.dev/config-build
