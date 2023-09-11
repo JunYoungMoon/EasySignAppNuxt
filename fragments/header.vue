@@ -1,19 +1,19 @@
 <template>
   <div>
     <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
+        v-model="drawer"
+        :mini-variant="miniVariant"
+        :clipped="clipped"
+        fixed
+        app
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
+            v-for="(item, i) in items"
+            :key="i"
+            :to="item.to"
+            router
+            exact
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -38,9 +38,15 @@
       </v-btn>
       <v-toolbar-title v-text="title"/>
       <v-spacer/>
-      <v-btn icon @click.stop="navigateToLogin">
-        <v-icon>mdi-account</v-icon>
+      <v-btn icon @click="toggleTheme">
+        <i :class="themeIcon" style="font-size: 30px;"/>
       </v-btn>
+      <v-btn icon @click.stop="navigateToLogin">
+        <i :class="loginIcon" style="font-size: 30px;"/>
+      </v-btn>
+<!--      <v-btn icon @click.stop="navigateToLogin">-->
+<!--        <v-icon>mdi-account</v-icon>-->
+<!--      </v-btn>-->
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>mdi-menu</v-icon>
       </v-btn>
@@ -51,24 +57,13 @@
 <script>
 
 export default {
-  // eslint-disable-next-line require-await
-  async asyncData({ data }) {
-
-    console.log(data);
-
-    // if (tokenType === 'refreshToken') {
-    //     const token = JSON.parse(data);
-    //
-    //     app.$cookies.set("accessToken", token.accessToken);
-    //     app.$cookies.set("refreshToken", token.refreshToken);
-    //
-    //   this.headerText = 'login';
-    // }
-  },
   data() {
     return {
       clipped: false,
       drawer: false,
+      fixed: false,
+      isDark: true,
+      theme: 'dark',
       items: [
         {
           icon: 'mdi-apps',
@@ -89,11 +84,37 @@ export default {
     }
   }
   ,
+  computed: {
+    themeIcon () {
+      return this.$vuetify.theme.dark ? 'mdi mdi-weather-night' : 'mdi mdi-weather-sunny'
+    },
+    loginIcon(){
+      // Vuex 스토어에서 authResult 상태를 가져와서 아이콘을 결정
+      const authResult = this.$store.state.authResult;
+      return authResult ? 'mdi mdi-account' : 'mdi mdi-login';
+    }
+  },
+  created() {
+    const savedTheme = this.$cookies.get('theme');
+    this.$vuetify.theme.dark = savedTheme === 'dark';
+  },
   methods: {
     navigateToLogin() {
-      this.$router.push('/login');
+      const authResult = this.$store.state.authResult;
+
+      // authResult 값에 따라서 로그인 또는 로그아웃 요청 보내기
+      if (authResult) {
+        // 로그아웃 요청 처리 하던지 마이페이지로 가던지
+        // this.$router.push('/logout');
+      } else {
+        // 로그인 요청 처리
+        this.$router.push('/login');
+      }
+    },
+    toggleTheme() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      this.$cookies.set('theme', this.$vuetify.theme.dark ? 'dark' : 'light');
     },
   },
-
 }
 </script>

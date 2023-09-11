@@ -1,9 +1,25 @@
 // middleware/auth.js
 
-export default async function (app) {
-    // 페이지 로딩 시 실행
-    await fetchCsrfToken(app);
-    await checkAuth(app, 'accessToken');
+export default async function ({app, store}) {
+    try {
+        console.log('Loading...');
+
+        const csrfToken = await fetchCsrfToken(app);
+        const authResult = await checkAuth(app, "accessToken", csrfToken);
+
+        if (!authResult) {
+            console.error('Authentication failed');
+            // 필요한 처리를 수행하거나 리다이렉트할 수 있습니다.
+        }
+
+        console.log('Authentication successful');
+
+        // Vuex 스토어에 authResult 업데이트
+        store.commit('setAuthResult', authResult.res);
+    } catch (error) {
+        console.error('Error during authentication check:', error);
+        // 오류 처리 로직을 추가하세요.
+    }
 }
 
 function ajaxRequest(app, url, method, data) {
@@ -59,28 +75,21 @@ function ajaxRequest(app, url, method, data) {
 
 async function fetchCsrfToken(app) {
     try {
-        // 미들웨어 시작 시 로딩 표시
-        console.log('Loading...');
-
-        // CSRF 토큰 요청
         const response = await app.$axios.$get('/getcsrf');
         const tokenInfo = response.token;
 
         console.log('CSRF token stored in Cookies:', tokenInfo);
 
         // 여기에서 필요한 작업 수행
-
-        // 로딩 완료
-        console.log('Loading finished.');
+        return tokenInfo;
     } catch (error) {
         console.error('Error fetching CSRF token:', error);
-
-        // 로딩 완료
-        console.log('Loading finished.');
+        throw error;
     }
 }
 
-async function checkAuth(app, tokenType) {
+
+async function checkAuth(app, tokenType, csrfToken) {
     let token;
     if (tokenType === 'accessToken') {
         token = app.$cookies.get('accessToken');
@@ -91,8 +100,6 @@ async function checkAuth(app, tokenType) {
         return;
     }
 
-    const csrfToken = app.$cookies.get('XSRF-TOKEN');
-
     try {
         const res = await ajaxRequest(app, '/check-auth', 'POST', {
             token,
@@ -100,7 +107,7 @@ async function checkAuth(app, tokenType) {
         });
 
         if (tokenType === 'accessToken' && res === 'Refresh token required') {
-            await checkAuth(app, 'refreshToken');
+            await checkAuth(app, 'refreshToken', csrfToken);
             return false;
         }
 
