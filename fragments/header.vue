@@ -2,6 +2,7 @@
   <div>
     <!--왼쪽 메뉴-->
     <v-navigation-drawer
+        v-if="drawer"
         v-model="drawer"
         :mini-variant="miniVariant"
         :clipped="clipped"
@@ -26,14 +27,40 @@
     <!--상단 헤더-->
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title v-text="title"/>
+      <v-toolbar-title v-text="title" @click="navigateToRoot" style="cursor: pointer;"/>
       <v-spacer/>
       <v-btn icon @click="toggleTheme">
         <i :class="themeIcon" style="font-size: 30px;"/>
       </v-btn>
-      <v-btn icon @click.stop="login">
-        <i :class="loginIcon" style="font-size: 30px;"/>
+
+      <!-- authResult 값이 true인 경우에만 드롭다운 버튼을 표시합니다 -->
+      <v-btn v-if="authResult" id="menu-activator" icon @click="toggleDropdown">
+        <i class="mdi mdi-account" style="font-size: 30px;"/>
       </v-btn>
+      <!-- authResult 값이 false인 경우에 드롭다운 버튼을 표시합니다 -->
+      <v-btn v-else icon @click="login" >
+        <i class="mdi mdi-login" style="font-size: 30px;"/>
+      </v-btn>
+
+      <v-btn icon @click="login">
+        <i class="rounded-image" style="font-size: 30px;">
+          <img src="https://lh3.googleusercontent.com/a/ACg8ocJe8CSN3nRzG8-489HvXanXci3O6CswADB9NHWQb6K5Ug=s96-c" alt="이미지 설명" style="width: 40px; height: 40px;">
+        </i>
+      </v-btn>
+
+      <!-- 드롭다운 메뉴 -->
+      <v-menu activator="#menu-activator" offset-y>
+        <v-list>
+          <v-list-item @click="goToMyInfo">
+            <v-list-item-title>My Info</v-list-item-title>
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
     </v-app-bar>
   </div>
 </template>
@@ -42,6 +69,7 @@
 export default {
   data() {
     return {
+      authResult: this.$store.state.authResult,
       clipped: false,
       drawer: false,
       fixed: false,
@@ -66,27 +94,44 @@ export default {
     themeIcon() {
       return this.$vuetify.theme.dark ? 'mdi mdi-weather-night' : 'mdi mdi-weather-sunny';
     },
-    loginIcon() {
-      return this.$store.state.authResult ? 'mdi mdi-account' : 'mdi mdi-login';
-    }
   },
   methods: {
+    goToMyInfo() {
+      // My Info 페이지로 이동
+      this.$router.push('/myinfo');
+    },
+    toggleDropdown() {
+      this.dropdown = !this.dropdown;
+    },
     login() {
       const authResult = this.$store.state.authResult;
 
-      // authResult 값에 따라서 로그인 또는 로그아웃 요청 보내기
-      if (authResult) {
-        // 로그아웃 요청 처리 하던지 마이페이지로 가던지
-        // this.$router.push('/logout');
-      } else {
-        // 로그인 요청 처리
+      if (!authResult) {
         this.$router.push('/login');
       }
+    },
+    logout(){
+      this.$cookies.remove('accessToken');
+      this.$cookies.remove('refreshToken');
+
+      this.$router.go(0);
     },
     toggleTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       this.$cookies.set('theme', this.$vuetify.theme.dark ? 'dark' : 'light');
     },
+    navigateToRoot() {
+      this.$router.push("/");
+    },
   },
 }
 </script>
+
+<style scoped>
+.rounded-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* 이미지를 원 모양으로 만듭니다. */
+  overflow: hidden; /* 원 밖의 부분을 숨깁니다. */
+}
+</style>

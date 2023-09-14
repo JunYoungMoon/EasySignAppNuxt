@@ -1,6 +1,10 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+    // server: {
+    //     host: '0.0.0.0', // 모든 IP에서 접근 허용
+    //     port: 3000, // 사용할 포트 번호
+    // },
     // Global page headers: https://go.nuxtjs.dev/config-head
     head: {
         titleTemplate: '%s - EasySignAppNuxt',
@@ -92,6 +96,10 @@ export default {
                             component: resolve(__dirname, 'pages/auth/login.vue'),
                         },
                     ],
+                },
+                {
+                  path: '/myinfo',
+                  component: resolve(__dirname, 'pages/myinfo.vue'),
                 });
         },
         middleware: ['auth','loginCallback'],

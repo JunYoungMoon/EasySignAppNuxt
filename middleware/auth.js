@@ -1,21 +1,16 @@
 // middleware/auth.js
 
-export default async function ({app, store}) {
+export default async function (app) {
     try {
         console.log('Loading...');
 
         const csrfToken = await fetchCsrfToken(app);
         const authResult = await checkAuth(app, "accessToken", csrfToken);
+        const userInfo = await getUserInfo(app, csrfToken);
 
-        if (!authResult) {
-            console.error('Authentication failed');
-            // 필요한 처리를 수행하거나 리다이렉트할 수 있습니다.
-        }
-
-        console.log('Authentication successful');
-
+        console.log(userInfo);
         // Vuex 스토어에 authResult 업데이트
-        store.commit('setAuthResult', authResult.res);
+        app.store.commit('setAuthResult', authResult.res);
     } catch (error) {
         console.error('Error during authentication check:', error);
         // 오류 처리 로직을 추가하세요.
@@ -110,6 +105,21 @@ async function checkAuth(app, tokenType, csrfToken) {
             await checkAuth(app, 'refreshToken', csrfToken);
             return false;
         }
+
+        return {res};
+    } catch (error) {
+        console.error('Error checking authentication:', error);
+    }
+}
+
+
+async function getUserInfo(app, csrfToken) {
+    const token = app.$cookies.get('accessToken');
+    try {
+        const res = await ajaxRequest(app, "/user-info", "POST", {
+            token,
+            csrfToken,
+        });
 
         return {res};
     } catch (error) {
