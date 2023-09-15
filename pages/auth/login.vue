@@ -41,6 +41,7 @@
 
 <script>
 export default {
+  middleware: [],
   name: 'Login',
   data() {
     return {

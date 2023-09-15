@@ -35,17 +35,14 @@
 
       <!-- authResult 값이 true인 경우에만 드롭다운 버튼을 표시합니다 -->
       <v-btn v-if="authResult" id="menu-activator" icon @click="toggleDropdown">
-        <i class="mdi mdi-account" style="font-size: 30px;"/>
+        <i class="rounded-image" style="font-size: 30px;">
+          <img v-if="userInfo && userInfo.profileImage" :src="userInfo.profileImage" alt="Profile Image" style="width: 40px; height: 40px;">
+          <i v-else class="mdi mdi-account" style="font-size: 30px;"/>
+        </i>
       </v-btn>
-      <!-- authResult 값이 false인 경우에 드롭다운 버튼을 표시합니다 -->
+      <!-- authResult 값이 false인 경우에 login 버튼을 표시합니다 -->
       <v-btn v-else icon @click="login" >
         <i class="mdi mdi-login" style="font-size: 30px;"/>
-      </v-btn>
-
-      <v-btn icon @click="login">
-        <i class="rounded-image" style="font-size: 30px;">
-          <img src="https://lh3.googleusercontent.com/a/ACg8ocJe8CSN3nRzG8-489HvXanXci3O6CswADB9NHWQb6K5Ug=s96-c" alt="이미지 설명" style="width: 40px; height: 40px;">
-        </i>
       </v-btn>
 
       <!-- 드롭다운 메뉴 -->
@@ -70,6 +67,7 @@ export default {
   data() {
     return {
       authResult: this.$store.state.authResult,
+      userInfo: this.$store.state.userInfo,
       clipped: false,
       drawer: false,
       fixed: false,

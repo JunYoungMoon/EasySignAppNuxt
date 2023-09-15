@@ -6,11 +6,16 @@ export default async function (app) {
 
         const csrfToken = await fetchCsrfToken(app);
         const authResult = await checkAuth(app, "accessToken", csrfToken);
-        const userInfo = await getUserInfo(app, csrfToken);
 
-        console.log(userInfo);
         // Vuex 스토어에 authResult 업데이트
         app.store.commit('setAuthResult', authResult.res);
+
+        if(authResult.res){
+          const userInfo = await getUserInfo(app, csrfToken);
+
+          app.store.commit('setUserInfo', userInfo.res);
+          console.log(userInfo);
+        }
     } catch (error) {
         console.error('Error during authentication check:', error);
         // 오류 처리 로직을 추가하세요.
@@ -96,6 +101,7 @@ async function checkAuth(app, tokenType, csrfToken) {
     }
 
     try {
+        console.log(tokenType + " call");
         const res = await ajaxRequest(app, '/check-auth', 'POST', {
             token,
             csrfToken,
