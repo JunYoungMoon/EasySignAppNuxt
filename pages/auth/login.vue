@@ -87,15 +87,15 @@ export default {
     },
     googleLogin() {
       // 구글 로그인 로직 작성
-      window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+      window.location.href = `${this.$config.apiURL}/oauth2/authorization/google`;
     },
     kakaoLogin() {
       // 카카오 로그인 로직 작성
-      window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
+      window.location.href = `${this.$config.apiURL}/oauth2/authorization/kakao`;
     },
     naverLogin() {
       // 네이버 로그인 로직 작성
-      window.location.href = 'http://localhost:8080/oauth2/authorization/naver';
+      window.location.href = `${this.$config.apiURL}/oauth2/authorization/naver`;
     },
     async fetchUserInfo() {
       try {

@@ -6,6 +6,15 @@ export default {
   //     port: 3000, // 사용할 포트 번호
   // },
   // Global page headers: https://go.nuxtjs.dev/config-head
+
+  //클라이언트나 서버나 어느 곳에서도 사용 가능한 값들을 선언해 두는 곳
+  publicRuntimeConfig: {
+    apiURL : process.env.API_URL
+  },
+  //서버에서만 사용 가능한 값들을 선언해 두는 곳
+  privateRuntimeConfig: {
+
+  },
   head: {
     titleTemplate: '%s - EasySignAppNuxt',
     title: 'EasySignAppNuxt',
@@ -48,7 +57,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:8080',
+    // baseURL: 'http://easy-api.sgmchain.net:2128',
+    baseURL: process.env.API_URL,
     credentials: true, // withCredentials를 활성화
   },
 

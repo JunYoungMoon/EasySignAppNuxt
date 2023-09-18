@@ -2,7 +2,7 @@
   <v-container>
     <!-- 상단에 프로필 이미지 표시 -->
     <v-row justify="center">
-      <v-avatar size="150">
+      <v-avatar size="150" class="ma-3">
         <v-img
           v-if="userInfo && userInfo.profileImage" :src="userInfo.profileImage"
           alt="Default Profile"
@@ -51,12 +51,39 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-row justify="center">
+      <v-btn
+        elevation="6"
+        large
+        class="ma-2"
+        :loading="loading"
+        :disabled="!isButtonEnabled"
+        @click="handleButtonClick"
+      >
+        <strong>변경</strong>
+        <template v-slot:loader>
+          <span>변경중...</span>
+        </template>
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 export default {
-  asyncData({store, redirect}){
+  watch: {
+    loader() {
+      const l = this.loader
+      this[l] = !this[l]
+
+      setTimeout(() => (this[l] = false), 3000)
+
+      this.loader = null
+    },
+  },
+
+  asyncData({store, redirect}) {
     // store에서 authResult 값을 가져옴
     const authResult = store.state.authResult;
 
@@ -67,6 +94,9 @@ export default {
   },
   data() {
     return {
+      isButtonEnabled: false, // 초기에 버튼을 비활성화
+      loader: null,
+      loading: false,
       authResult: this.$store.state.authResult,
       userInfo: this.$store.state.userInfo,
       isUploading: false,
@@ -74,6 +104,18 @@ export default {
     };
   },
   methods: {
+    handleButtonClick() {
+      // 버튼 클릭 이벤트 핸들러
+      if (!this.loading) {
+        // 변경 작업을 시작
+        this.loading = true;
+        // 여기에서 변경 작업을 수행하거나 비동기 작업을 시작
+
+        // 변경 작업이 완료되면 다시 버튼을 활성화
+        // 예를 들어 비동기 작업이 끝나면 다음과 같이 loading을 다시 false로 설정
+        // this.loading = false;
+      }
+    },
     editNickname() {
       // 닉네임 편집 로직
       // 사용자의 닉네임을 편집하는 대화 상자 또는 폼을 열 수 있습니다.
@@ -88,15 +130,7 @@ export default {
       // 파일 업로드 처리 로직
       const file = event.target.files[0];
       if (file) {
-        // 파일 업로드 로직을 구현하세요.
-        // 업로드 후 this.profileImage에 새로운 이미지 URL을 할당하세요.
-        // this.profileImage = 'NEW_IMAGE_URL';
-        this.isUploading = true;
-        setTimeout(() => {
-          // 업로드 시뮬레이션
-          this.profileImage = 'NEW_IMAGE_URL';
-          this.isUploading = false;
-        }, 2000);
+
       }
     }
   }
@@ -112,5 +146,41 @@ export default {
   cursor: pointer;
   padding: 5px;
   border-radius: 50%;
+}
+
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
